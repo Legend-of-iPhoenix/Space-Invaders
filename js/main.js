@@ -18,6 +18,10 @@ var speed = 1;
 var round = 0;
 var score = 0;
 
+var lives = 3;
+
+var playerPos = 0;
+
 function Bullet(x, y, deltaX, deltaY, radius, damage) {
   this.x = x;
   this.y = y;
@@ -117,9 +121,35 @@ function tick() { // makes the game "tick"
         return col
       });
     }
-    aliens.map(col => col.map(alien => alien && alien.draw())) // bit of a hack, if alien is false/false-y (aka null), the interpreter won't execute alien.draw.
+    aliens.map(col => col.map(alien => alien && alien.draw())) // bit of a hack, if alien is false/false-y (aka null), the interpreter won't execute alien.draw
   }
+  bullets.map(bullet=>bullet.draw())
+  drawPlayer()
 }
+
+function drawPlayer() {
+	var img = document.getElementById("ship1");
+	context.drawImage(img, playerPos, 300, 5*16, 5*16)
+}
+
+window.onkeydown = function(event) {
+	var key = event.key;
+	if (key) {
+		if (key == "ArrowLeft") { // user pressed left
+			playerPos -= 5
+			drawPlayer();
+		}
+		if (key == "ArrowRight") { // user pressed right
+			playerPos += 5
+			drawPlayer();
+		}
+		if (key == " " && bullets.length < bulletLimit) {
+			bullets.push(new Bullet(playerPos, 300 - 5*7, 0, -2, 5))
+		}
+	}
+}
+
+setInterval(tick,0)
 
 // helper functions vv
 function fillBackground(style) {
