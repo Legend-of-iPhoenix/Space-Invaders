@@ -17,7 +17,7 @@ var canFire = true;
 var direction = -1; // start going left, towards -inf
 var speed = 3;
 
-var round = 0;
+var round = 1;
 var score = 0;
 
 var lives = 3;
