@@ -11,9 +11,11 @@ var enemyBullets = [];
 var bullets = [];
 
 var bulletLimit = 4;
+var firingCooldown = 100; // ms
+var canFire = true;
 
 var direction = -1; // start going left, towards -inf
-var speed = 1;
+var speed = 3;
 
 var round = 0;
 var score = 0;
@@ -99,11 +101,11 @@ function tick() { // makes the game "tick"
 
   // clean the array, removing empty cols from the edges.
 
-  while (aliens[aliens.length - 1] === null) {
+  while (aliens[aliens.length - 1].find(x=>x) === undefined) {
     aliens.pop(); // remove last
   }
 
-  while (aliens[0] === null) {
+  while (aliens[0].find(x=>x) === undefined) {
     aliens.shift(); // remove first element
   }
 
@@ -123,8 +125,15 @@ function tick() { // makes the game "tick"
     }
     aliens.map(col => col.map(alien => alien && alien.draw())) // bit of a hack, if alien is false/false-y (aka null), the interpreter won't execute alien.draw
   }
-  bullets.map(bullet=>bullet.draw())
+  bullets = bullets.map(bullet=>{
+  	if (Math.abs(bullet.y) > 400) {
+  		return null
+  	}
+  	bullet.draw()
+  	return bullet
+  }).filter(bullet => bullet)
   drawPlayer()
+  window.requestAnimationFrame(tick);
 }
 
 function drawPlayer() {
@@ -143,13 +152,15 @@ window.onkeydown = function(event) {
 			playerPos += 5
 			drawPlayer();
 		}
-		if (key == " " && bullets.length < bulletLimit) {
-			bullets.push(new Bullet(playerPos, 300 - 5*7, 0, -2, 5))
+		if (key == " " && bullets.length < bulletLimit && canFire) {
+			canFire = false;
+			setTimeout(x=>canFire=true, firingCooldown);
+			bullets.push(new Bullet(playerPos, 300 - 5*7, 0, -4, 5))
 		}
 	}
 }
 
-setInterval(tick,0)
+window.requestAnimationFrame(tick);
 
 // helper functions vv
 function fillBackground(style) {
