@@ -1,21 +1,27 @@
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext('2d');
 
+var scale = 5; // increase this if it seems blurry, decrease to give slight performance boost.
+
+canvas.width = 192 * scale;
+canvas.height = 160 * scale;
+
+var keysDown = {};
+
 context.translate(canvas.width / 2, canvas.height / 2); // center of canvas = (0, 0)
-context.scale(.2, .2) // canvas coords are x=0-196 and y=0-80, just like the real game. 
+context.scale(5/scale, 5/scale) // canvas coords are x=0-196 and y=0-80, just like the real game. 
 
 fillBackground("black");
 
 var aliens = [];
 var enemyBullets = [];
-var bullets = [];
+var bullet = null;
 
-var bulletLimit = 4;
 var firingCooldown = 100; // ms
 var canFire = true;
 
 var direction = -1; // start going left, towards -inf
-var speed = 3;
+var speed = 1;
 
 var round = 1;
 var score = 0;
@@ -24,13 +30,12 @@ var lives = 3;
 
 var playerPos = 0;
 
-function Bullet(x, y, deltaX, deltaY, radius, damage) {
+function Bullet(x, y, deltaX, deltaY, radius) {
   this.x = x;
   this.y = y;
   this.deltaX = deltaX;
   this.deltaY = deltaY;
   this.radius = radius;
-  this.damage = damage;
   this.draw = function () {
     context.fillStyle = "white";
     context.beginPath();
@@ -46,6 +51,8 @@ function Bullet(x, y, deltaX, deltaY, radius, damage) {
   this.checkCollision = function (x, y, width, height) {
     // algorithm from https://yal.cc/rectangle-circle-intersection-test/
     // fantastic article, had exactly what I needed with no fluff
+    x = x - width/2;
+    y = y - height/2;
     return ((this.x - Math.max(x, Math.min(this.x, x + width))) ** 2) + ((this.y - Math.max(y, Math.min(this.y, y + height))) ** 2) < (this.radius ** 2);
   }
 }
@@ -53,13 +60,23 @@ function Bullet(x, y, deltaX, deltaY, radius, damage) {
 function Alien(x, y, sprite, size) {
   this.x = x;
   this.y = y;
+  this.deltaX = 0;
+  this.deltaY = 0;
   this.sprite = sprite;
   this.size = size || [48, 32]; // if size is specified, use it, otherwise use 32.
+  this.padding = 8;
+  this.getScreenPos = function() {
+  	return {
+  		x: ((this.x - 11/2) * (this.size[0] + this.padding * 2)) + this.deltaX,
+  		y: ((this.y - 5) * (this.size[1] + this.padding * 2)) + this.deltaY
+  	}
+  }
   this.draw = function () { /* todo: when sprites are done, make this use spritesheet(s) */
     context.fillStyle = this.sprite;
+    var pos = this.getScreenPos();
     var size = this.size,
-      x = this.x,
-      y = this.y;
+      x = pos.x,
+      y = pos.y;
     context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
   }
 }
@@ -71,7 +88,7 @@ var rowColors = ["red", "orange", "green", "blue", "purple"] // pretty arbitrary
 for (var i = 0; i < 11; i++) {
   aliens.push([]); // new column
   for (var j = 0; j < 5; j++) {
-    var index = aliens[aliens.length - 1].push(new Alien(i * 64 - 352, j * 48 - 220, rowColors[j], [48, 32])); // 352 and 220 are constants for centering.
+    var index = aliens[aliens.length - 1].push(new Alien(i, j, rowColors[j], [48, 32]));
     aliens[aliens.length - 1][index - 1].draw();
   }
 }
@@ -80,18 +97,15 @@ function tick() { // makes the game "tick"
   aliens = aliens.map(col => {
     col = col.map(alien => {
       if (alien) {
-        alien.x += direction * speed;
+        alien.deltaX += direction * speed;
         var hit = false;
-        bullets = bullets.map(bullet => {
-          if (bullet.checkCollision(alien.x, alien.y, alien.size[0], alien.size[1])) { // if a bullet collided with an alien
+        if (bullet) {
+        	var pos = alien.getScreenPos();
+          if (bullet.checkCollision(pos.x, pos.y, alien.size[0], alien.size[1])) { // if a bullet collided with an alien
             score += 5 * round; // increase the score
-            hit = true;
-            return null; // delete bullet
+            bullet = null; // delete bullet
+            return null // delete alien
           }
-          return bullet
-        }).filter(bullet => bullet); // remove deleted values.
-        if (hit) {
-          return null
         }
         return alien
       }
@@ -111,12 +125,12 @@ function tick() { // makes the game "tick"
 
   if (aliens.length) {
     fillBackground("black"); // clear screen
-    if (Math.max(Math.abs(aliens[0].find(alien => alien).x), Math.abs(aliens[aliens.length - 1].find(alien => alien).x)) >= 700) {
+    if (Math.max(Math.abs(aliens[0].find(alien => alien).getScreenPos().x), Math.abs(aliens[aliens.length - 1].find(alien => alien).getScreenPos().x)) >= 90*scale) {
       direction *= -1 // flip direction
       aliens = aliens.map(col => { // shift down the aliens
         col.map(alien => {
           if (alien) {
-            alien.y += 5
+            alien.deltaY += 5
           }
           return alien;
         });
@@ -125,39 +139,38 @@ function tick() { // makes the game "tick"
     }
     aliens.map(col => col.map(alien => alien && alien.draw())) // bit of a hack, if alien is false/false-y (aka null), the interpreter won't execute alien.draw
   }
-  bullets = bullets.map(bullet=>{
+
+  if (bullet) {
   	if (Math.abs(bullet.y) > 400) {
-  		return null
+  		bullet = null;
+  	} else {
+  		bullet.draw()
   	}
-  	bullet.draw()
-  	return bullet
-  }).filter(bullet => bullet)
-  drawPlayer()
+  }
+
+  if (keysDown['ArrowLeft']) {
+  	playerPos -= 3;
+  }
+  if (keysDown['ArrowRight']) {
+  	playerPos += 3;
+  }
+
+	var img = document.getElementById("ship1");
+	context.drawImage(img, playerPos, 300, 5*16, 5*16)
+
   window.requestAnimationFrame(tick);
 }
 
-function drawPlayer() {
-	var img = document.getElementById("ship1");
-	context.drawImage(img, playerPos, 300, 5*16, 5*16)
+window.onkeydown = function(event) {
+	keysDown[event.key] = true;
+	var key = event.key;
+	if (key == " " && !bullet) { // if we pressed space and there isn't a bullet being rendered.
+		bullet = new Bullet(playerPos + 8 * scale, 300 - 5*7, 0, -4, 5);
+	}
 }
 
-window.onkeydown = function(event) {
-	var key = event.key;
-	if (key) {
-		if (key == "ArrowLeft") { // user pressed left
-			playerPos -= 5
-			drawPlayer();
-		}
-		if (key == "ArrowRight") { // user pressed right
-			playerPos += 5
-			drawPlayer();
-		}
-		if (key == " " && bullets.length < bulletLimit && canFire) {
-			canFire = false;
-			setTimeout(x=>canFire=true, firingCooldown);
-			bullets.push(new Bullet(playerPos, 300 - 5*7, 0, -4, 5))
-		}
-	}
+window.onkeyup = function (event) {
+	keysDown[event.key] = false;
 }
 
 window.requestAnimationFrame(tick);
@@ -169,11 +182,4 @@ function fillBackground(style) {
   context.setTransform(1, 0, 0, 1, 0, 0); // simple transformation matrix, just reset everything.
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.restore();
-}
-
-/*
-  Unused, but could be helpful.
-*/
-function toRadians(degrees) {
-  return degrees * Math.PI / 180;
 }

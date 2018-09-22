@@ -19,6 +19,11 @@
     </style>
   </head>
   <body>
+    <div id="mobileCompatiblilty"> <!-- super hacky and terrible code, I just needed something that would let me demo it on my phone -->
+      <button onclick="keysDown['ArrowLeft'] = true; setTimeout(x=>{keysDown['ArrowLeft']=false}, 250)">&lt;</button>
+      <button onclick="window.onkeydown({key: ' '});">Shoot</button>
+      <button onclick="keysDown['ArrowRight'] = true; setTimeout(x=>{keysDown['ArrowRight']=false}, 250)">&gt;</button>
+    </div>
     <canvas id="canvas"></canvas>
     <script src="js/main.js"></script>
     <img src="img/ship1.png" id="ship1">
