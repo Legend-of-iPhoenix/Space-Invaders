@@ -6,25 +6,21 @@ var scale = 5; // increase this if it seems blurry, decrease to give slight perf
 canvas.width = 192 * scale;
 canvas.height = 160 * scale;
 
-var keysDown = {};
+var keysDown = {}; // current keys held down on the keyboard
 
 context.translate(canvas.width / 2, canvas.height / 2); // center of canvas = (0, 0)
 context.scale(5 / scale, 5 / scale) // canvas coords are x=0-196 and y=0-80, just like the real game. 
 
 fillBackground("black");
 
-var aliens = [];
-var enemyBullets = [];
+var aliens = []; // holds the aliens. Check docs for more info.
+var enemyBullets = []; // will eventually hold bullets fired by aliens
 var bullet = null; // holds bullet fired by player
-var bulletSpeed = 6;
-
-var firingCooldown = 100; // ms
-var canFire = true;
+var bulletSpeed = 6; // speed of bullet
 
 var direction = -1; // start going left, towards -inf
 var speed = 1; // alien speed
 var alienSpeedup = .5; // added to speed every round.
-
 
 var round = 1; // unused, will be incremented when aliens redraw
 var score = 0; // current score.
