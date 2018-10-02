@@ -29,7 +29,7 @@ var lives = 3; // unused, will hold lives
 
 var playerPos = 0; // position of player
 
-var numberOfDudes = 9; // number of alien sprites.
+var numberOfDudes = 18; // number of alien sprites.
 
 function Bullet(x, y, deltaX, deltaY, radius, firedBy) {
   this.x = x;
@@ -92,7 +92,7 @@ function Alien(x, y, sprite, size) {
       x = pos.x,
       y = pos.y;
  
-     context.drawImage(alien, pos.x + size[0]/2, pos.y + size[1]/2, 11 * scale, 9 * scale)
+     context.drawImage(alien, x - size[0] / 2, y - size[1] / 2, 11 * scale, 9 * scale) // fix all the maths
     //context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
   }
 
@@ -215,15 +215,4 @@ function fillBackground(style) {
   context.setTransform(1, 0, 0, 1, 0, 0); // simple transformation matrix, just reset everything. If it makes no sense, ignore this line.
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.restore();
-}
-console = {
-  error: function (...stuff) {
-    document.getElementById('console').innerText += stuff.join(' : ')
-  },
-  warn: function (...stuff) {
-    document.getElementById('console').innerText += stuff.join(' : ')
-  },
-  log: function (...stuff) {
-    document.getElementById('console').innerText += stuff.join(' : ')
-  }
 }
