@@ -83,17 +83,14 @@ function Alien(x, y, sprite, size) {
     }
   }
   this.draw = function () { /* todo: when sprites are done, make this use spritesheet(s) */
-    
     var alien = document.getElementById("bluedude");
  
-    
-    context.fillStyle = this.sprite;
     var pos = this.getScreenPos();
     var size = this.size,
       x = pos.x,
       y = pos.y;
-    
-     context.drawImage(alien, pos.x, pos.y, 11 * scale, 10 * scale)
+ 
+     context.drawImage(alien, pos.x + size[0]/2, pos.y + size[1]/2, 11 * scale, 10 * scale)
     //context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
   }
 
@@ -216,4 +213,15 @@ function fillBackground(style) {
   context.setTransform(1, 0, 0, 1, 0, 0); // simple transformation matrix, just reset everything. If it makes no sense, ignore this line.
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.restore();
+}
+console = {
+  error: function (...stuff) {
+    document.getElementById('console').innerText += stuff.join(' : ')
+  },
+  warn: function (...stuff) {
+    document.getElementById('console').innerText += stuff.join(' : ')
+  },
+  log: function (...stuff) {
+    document.getElementById('console').innerText += stuff.join(' : ')
+  }
 }
