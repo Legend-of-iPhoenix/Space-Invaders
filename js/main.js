@@ -83,7 +83,7 @@ function Alien(x, y, sprite, size) {
     }
   }
   this.draw = function () { /* todo: when sprites are done, make this use spritesheet(s) */
-    var alien = document.getElementById("bluedude");
+    var alien = document.getElementById(this.sprite);
  
     var pos = this.getScreenPos();
     var size = this.size,
@@ -100,13 +100,13 @@ function Alien(x, y, sprite, size) {
 }
 
 
-var rowColors = ["red", "orange", "green", "blue", "purple"] // pretty arbitrary
+var rowColors = ["bluedude", "reddude", "yellowdude"] // pretty arbitrary
 // create the aliens.
 function createAliens() { // wrap it as a function because we'll use it later to reset the board.
   for (var i = 0; i < 11; i++) {
     aliens.push([]); // new column
     for (var j = 0; j < 5; j++) {
-      var index = aliens[aliens.length - 1].push(new Alien(i, j, rowColors[j], [48, 32]));
+      var index = aliens[aliens.length - 1].push(new Alien(i, j, rowColors[j % j.length], [48, 32]));
       aliens[aliens.length - 1][index - 1].draw();
     }
   }
