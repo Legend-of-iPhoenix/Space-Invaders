@@ -111,7 +111,10 @@ function createAliens() { // wrap it as a function because we'll use it later to
     }
   }
 }
-createAliens();
+window.onload = function () {
+  createAliens();
+  window.requestAnimationFrame(tick);
+}
 
 function tick() { // makes the game "tick"
   aliens = aliens.map(col => {
@@ -203,8 +206,6 @@ window.onkeydown = function (event) {
 window.onkeyup = function (event) {
   keysDown[event.key] = false;
 }
-
-window.requestAnimationFrame(tick);
 
 // helper functions vv
 function fillBackground(style) {
