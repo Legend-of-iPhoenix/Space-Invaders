@@ -83,12 +83,18 @@ function Alien(x, y, sprite, size) {
     }
   }
   this.draw = function () { /* todo: when sprites are done, make this use spritesheet(s) */
+    
+    var alien = document.getElementById("bluedude");
+ 
+    
     context.fillStyle = this.sprite;
     var pos = this.getScreenPos();
     var size = this.size,
       x = pos.x,
       y = pos.y;
-    context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
+    
+     context.drawImage(alien, pos.x, pos.y, 11 * scale, 10 * scale)
+    //context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
   }
 
   this.ondestroy = function () { // called right before alien gets destroyed
