@@ -40,7 +40,7 @@ function Bullet(x, y, deltaX, deltaY, radius, firedBy) {
   this.firedBy = firedBy;
 
   this.draw = function () { // draws the bullet
-    context.fillStyle = "orange";
+    context.fillStyle = "#FFAAOO";
     context.beginPath();
     context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
     context.fill();
