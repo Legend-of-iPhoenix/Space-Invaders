@@ -29,6 +29,8 @@ var lives = 3; // unused, will hold lives
 
 var playerPos = 0; // position of player
 
+var numberOfDudes = 9; // number of alien sprites.
+
 function Bullet(x, y, deltaX, deltaY, radius, firedBy) {
   this.x = x;
   this.y = y;
@@ -90,7 +92,7 @@ function Alien(x, y, sprite, size) {
       x = pos.x,
       y = pos.y;
  
-     context.drawImage(alien, pos.x + size[0]/2, pos.y + size[1]/2, 9 * scale, 9 * scale)
+     context.drawImage(alien, pos.x + size[0]/2, pos.y + size[1]/2, 11 * scale, 9 * scale)
     //context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
   }
 
@@ -99,14 +101,12 @@ function Alien(x, y, sprite, size) {
   }
 }
 
-
-var rowColors = ["bluedude", "reddude", "yellowdude"] // pretty arbitrary
 // create the aliens.
 function createAliens() { // wrap it as a function because we'll use it later to reset the board.
   for (var i = 0; i < 11; i++) {
     aliens.push([]); // new column
     for (var j = 0; j < 5; j++) {
-      var index = aliens[aliens.length - 1].push(new Alien(i, j, rowColors[j % j.length], [48, 32]));
+      var index = aliens[aliens.length - 1].push(new Alien(i, j, 'dude_'+Math.floor(Math.random()*numberOfDudes), [48, 32]));
       aliens[aliens.length - 1][index - 1].draw();
     }
   }
