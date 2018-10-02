@@ -90,7 +90,7 @@ function Alien(x, y, sprite, size) {
       x = pos.x,
       y = pos.y;
  
-     context.drawImage(alien, pos.x + size[0]/2, pos.y + size[1]/2, 11 * scale, 10 * scale)
+     context.drawImage(alien, pos.x + size[0]/2, pos.y + size[1]/2, 9 * scale, 9 * scale)
     //context.fillRect(x - size[0] / 2, y - size[1] / 2, size[0], size[1]); // fill a rectangle around the center of the sprite.
   }
 
@@ -111,7 +111,6 @@ function createAliens() { // wrap it as a function because we'll use it later to
     }
   }
 }
-createAliens();
 
 function tick() { // makes the game "tick"
   aliens = aliens.map(col => {
@@ -204,7 +203,10 @@ window.onkeyup = function (event) {
   keysDown[event.key] = false;
 }
 
-window.requestAnimationFrame(tick);
+window.onload = function() {
+  createAliens();
+  window.requestAnimationFrame(tick);
+}
 
 // helper functions vv
 function fillBackground(style) {
