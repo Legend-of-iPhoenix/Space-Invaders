@@ -16,7 +16,7 @@ fillBackground("black");
 var aliens = []; // holds the aliens. Check docs for more info.
 var enemyBullets = []; // will eventually hold bullets fired by aliens
 var bullet = null; // holds bullet fired by player
-var bulletSpeed = 6; // speed of bullet
+var bulletSpeed = 13; // speed of bullet
 
 var direction = -1; // start going left, towards -inf
 var speed = 1; // alien speed
@@ -40,7 +40,7 @@ function Bullet(x, y, deltaX, deltaY, radius, firedBy) {
   this.firedBy = firedBy;
 
   this.draw = function () { // draws the bullet
-    context.fillStyle = "#FFAAOO";
+    context.fillStyle = "#ffaa00";
     context.beginPath();
     context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
     context.fill();
