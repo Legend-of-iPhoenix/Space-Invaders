@@ -113,6 +113,7 @@ function createAliens() { // wrap it as a function because we'll use it later to
 }
 
 function tick() { // makes the game "tick"
+  context.fillText(score,-160,-162);
   aliens = aliens.map(col => {
     col = col.map(alien => {
       if (alien) {
@@ -121,6 +122,7 @@ function tick() { // makes the game "tick"
           var pos = alien.getScreenPos();
           if (bullet.checkCollision(pos.x, pos.y, alien.size[0], alien.size[1])) { // if a bullet collided with an alien
             score += 5 * round; // increase the score
+            context.fillText
             bullet.ondestroy();
             bullet = null; // delete bullet
             alien.ondestroy();
@@ -185,7 +187,7 @@ function tick() { // makes the game "tick"
   }
 
   var img = document.getElementById("ship1");
-  context.drawImage(img, playerPos, 300, 5 * 16, 5 * 16)
+  context.drawImage(img, playerPos, 300, 5 * 16, 5 * 16)f
 
   window.requestAnimationFrame(tick);
 }
